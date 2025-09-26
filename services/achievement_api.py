@@ -2,6 +2,7 @@
 
 import asyncio
 import aiohttp
+import re
 from datetime import datetime
 from pathlib import Path
 
@@ -94,10 +95,14 @@ async def collect_steps(session, ach_id, server, character, depth=0):
 
     return steps, parent_info
 
+
+def sanitize_slug(text: str) -> str:
+    return re.sub(r'[^A-Za-z0-9-]', '', text)
+
 def get_achievement_progress(ach_id, server, character):
     async def build_tree():
         async with aiohttp.ClientSession() as session:
-            return await collect_steps(session, int(ach_id), server, character)
+            return await collect_steps(session, int(ach_id), sanitize_slug(server), character)
          
     print(f"[DEBUG] Built tree.")
     return asyncio.run(build_tree())

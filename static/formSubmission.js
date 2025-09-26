@@ -59,6 +59,7 @@ function renderSteps(steps, depth = 0, parentDone = false, characterServerSlug =
 function generateAchievementProgress(e) {
     e.preventDefault();
     const params = new URLSearchParams(new FormData(e.target));
+    console.log(params);
     document.getElementById('loading').style.display = 'block';
     document.getElementById("generateButton").disabled = true;
     const results = document.getElementById('results');
@@ -78,7 +79,7 @@ function generateAchievementProgress(e) {
             results.appendChild(renderSteps(data.steps, 0, false, characterServerSlug));
             document.getElementById('loading').style.display = 'none';
             document.getElementById("generateButton").disabled = false;
-            document.getElementById("title").innerText = `${data.parent.name} ${characterServerSlug}`;
+            document.getElementById("title").innerText = `${data.parent.name} ${data.character}-${params.get('server')}`;
             // refresh links for Wowhead Power addon if it exists
             // makes sure links are correct after page is updated
             if (typeof $WowheadPower !== "undefined") {

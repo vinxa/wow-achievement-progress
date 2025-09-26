@@ -12,7 +12,7 @@ async function loadRealms(region = "us") {
 
   realms.forEach(r => {
     const option = new Option(`${r.name}`,
-      r.slug,
+      r.name,
       false,
       false
     );
