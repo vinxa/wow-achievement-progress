@@ -39,9 +39,9 @@
       </div>
 
       <div class="form-group">
-        <label>Achievement ID</label>
-        <input name="ach_id" class="form-control" required>
-        <small class="form-text text-muted">e.g. 19458 (A World Awoken)</small>
+        <label id="achiev_label">Achievement ID</label>
+        <small class="form-text text-muted mt-0 d-none" id="suggestions">Please enter a valid achievement id number.</small>
+        <select name="ach_id" id="ach_id" class="form-control" required></select>
       </div>
 
       <button id="generateButton" type="submit" class="btn btn-success mt-3 hover-mask">Generate</button>
@@ -57,5 +57,6 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="{{ url_for('static', filename='formSubmission.js') }}"></script>
   <script src="{{ url_for('static', filename='serverSelection.js') }}"></script>
+  <script src="{{ url_for('static', filename='formSuggestions.js') }}"></script>
 </body>
 </html>
