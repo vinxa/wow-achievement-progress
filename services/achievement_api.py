@@ -2,18 +2,10 @@
 
 import asyncio
 import aiohttp
-import re
-from datetime import datetime
 from pathlib import Path
+from .helpers import iso_to_seconds, sanitize_slug
 
 BLIZZ_URL = "https://worldofwarcraft.blizzard.com/en-us/character/us/{server}/{character}/achievement/{ach_id}"
-
-def iso_to_seconds(iso_str):
-    try:
-        dt = datetime.fromisoformat(iso_str.replace("Z", "+00:00"))
-        return int(dt.timestamp())
-    except Exception:
-        return None
 
 async def fetch_achievement(session, ach_id, server, character):
     url = BLIZZ_URL.format(server=server, character=character, ach_id=ach_id)
@@ -98,10 +90,6 @@ async def collect_steps(session, ach_id, server, character, depth=0):
         await asyncio.gather(*tasks)
 
     return steps, parent_info
-
-
-def sanitize_slug(text: str) -> str:
-    return re.sub(r'[^A-Za-z0-9-]', '', text)
 
 def get_achievement_progress(ach_id, server, character):
     async def build_tree():

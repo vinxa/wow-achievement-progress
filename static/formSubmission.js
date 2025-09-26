@@ -101,7 +101,7 @@ function generateAchievementProgress(e) {
             titleEl.innerHTML = `
             ${checkbox} <a href="${wowheadUrl}" target="_blank" rel="noopener noreferrer">
                 ${data.parent.name}
-            </a> (${data.character}-${params.get('server')})`; 
+            </a> (${data.character}-${data.server_name})`; 
 
             if (isDone) {
                 titleEl.classList.add('completed');
