@@ -197,6 +197,14 @@ ul.collapse.show {
     transition-timing-function: linear;
 }
 
+#formToggle:hover {
+    background-color: #4a4545;
+}
+
+#formToggle:active {
+    background-color: #5c5555;
+}
+
 #toggleRow {
     display: flex;
     justify-content: flex-end;
@@ -255,11 +263,12 @@ ul.collapse.show {
 }
 
 #achiev_title a {
-  color: inherit;
-  text-decoration: none;
+    color: inherit;
+    text-decoration: none;
 }
+
 #achiev_title a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .completed {
