@@ -96,35 +96,34 @@ async def fetch_realms(region):
 
 def get_realms(region):
     now = time.time()
-    if CACHE_FILE.exists():
+    cache = {}
+
+    # Try loading cache file safely
+    if CACHE_FILE.exists() and CACHE_FILE.stat().st_size > 0:
         try:
-            with open(CACHE_FILE, "r") as f:
+            with open(CACHE_FILE, "r", encoding="utf-8") as f:
                 cache = json.load(f)
-            entry = cache.get(region)
-            if entry and now - entry["timestamp"] < CACHE_TTL:
-                return entry["data"]
-        except Exception:
-            pass  # corrupted cache, ignore
-        
-    try:
-        realms = asyncio.run(fetch_realms(region))
-    except Exception as e:
-        print(f"Fetch failed: {e}, using stale cache")
-        if entry:  # from file
-            return entry["data"]
-        realms = []
+        except Exception as e: # corrupted cache
+            print("Cache read error:", e)
+            cache = {}
+
+    entry = cache.get(region)
+    if entry and now - entry["timestamp"] < CACHE_TTL:
+        return entry["data"]
+
+    # cache expired or missing
+    realms = asyncio.run(fetch_realms(region))
+
+    # update memory cache
+    cache[region] = {"timestamp": now, "data": realms}
 
     # save back to cache
     try:
-        if CACHE_FILE.exists():
-            with open(CACHE_FILE, "r") as f:
-                cache = json.load(f)
-        else:
-            cache = {}
-        cache[region] = {"timestamp": now, "data": realms}
-        with open(CACHE_FILE, "w") as f:
+        tmp_file = CACHE_FILE.with_suffix(".tmp")
+        with open(tmp_file, "w", encoding="utf-8") as f:
             json.dump(cache, f)
+        tmp_file.replace(CACHE_FILE)
     except Exception as e:
         print("Failed to write cache:", e)
 
-    return _realms_cache[region]["data"]
+    return realms
