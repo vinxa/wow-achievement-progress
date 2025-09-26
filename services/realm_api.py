@@ -109,9 +109,11 @@ def get_realms(region):
 
     entry = cache.get(region)
     if entry and now - entry["timestamp"] < CACHE_TTL:
+        print("Loaded realms from cache")
         return entry["data"]
 
     # cache expired or missing
+    print("Fetching realms from blizzard...")
     realms = asyncio.run(fetch_realms(region))
 
     # update memory cache
