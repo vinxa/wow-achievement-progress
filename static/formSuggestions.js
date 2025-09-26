@@ -1,4 +1,5 @@
 const suggestedAchievements = [
+    { "id": 41201, "name": "You Xal Not Pass"},
     { "id": 19458, "name": "A World Awoken (Dragonflight)" },
     { "id": 20501, "name": "Back from the Beyond (Shadowlands)" },
     { "id": 40953, "name": "A Farewell to Arms (Battle for Azeroth)" },
