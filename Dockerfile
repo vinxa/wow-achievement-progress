@@ -9,10 +9,9 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
+RUN pip install gunicorn
+
 COPY . .
 EXPOSE 5001
 
-ENV FLASK_APP=app.py
-ENV FLASK_ENV=production
-
-CMD ["python", "app.py"]
+CMD ["gunicorn", "-b", "0.0.0.0:5001", "app:create_app()"]
