@@ -6,6 +6,7 @@ import time
 import json
 from pathlib import Path
 
+
 CACHE_FILE = Path(__file__).parent / "realms_cache.json"
 CACHE_TTL = 24 * 3600  # 1 day
 
@@ -115,9 +116,15 @@ def get_realms(region):
 
     # save back to cache
     try:
+        if CACHE_FILE.exists():
+            with open(CACHE_FILE, "r") as f:
+                cache = json.load(f)
+        else:
+            cache = {}
+        cache[region] = {"timestamp": now, "data": realms}
         with open(CACHE_FILE, "w") as f:
             json.dump(cache, f)
     except Exception as e:
         print("Failed to write cache:", e)
 
-    return realms
+    return _realms_cache[region]["data"]
