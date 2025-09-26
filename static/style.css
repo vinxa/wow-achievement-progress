@@ -253,3 +253,15 @@ ul.collapse.show {
     border-radius: 0.2rem;
     margin-top: 0.5rem;
 }
+
+#achiev_title a {
+  color: inherit;
+  text-decoration: none;
+}
+#achiev_title a:hover {
+  text-decoration: underline;
+}
+
+.completed {
+    color: #539957;
+}

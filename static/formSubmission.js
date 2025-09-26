@@ -62,7 +62,6 @@ function generateAchievementProgress(e) {
     const toggle = document.getElementById('formToggle');
 
     const params = new URLSearchParams(new FormData(e.target));
-    console.log(params);
     document.getElementById('loading').style.display = 'block';
     document.getElementById("generateButton").disabled = true;
     document.getElementById("achiev_title").innerText = "";
@@ -84,16 +83,32 @@ function generateAchievementProgress(e) {
             results.innerHTML = '';
 
             const characterServerSlug = `${data.character}-${data.server}`.replace(/[^A-Za-z0-9-]/g, '');
-            console.log(data);
 
             results.appendChild(renderSteps(data.steps, 0, false, characterServerSlug));
+            // Sort out visibility
             document.getElementById('loading').style.display = 'none';
             document.getElementById('title').classList.add('collapsed');
             document.getElementById("generateButton").disabled = false;
-            document.getElementById("achiev_title").innerText = `${data.parent.name} (${data.character}-${params.get('server')})`;
             document.getElementById("filterButton").classList.remove("d-none");
             document.getElementById("exportButton").classList.remove("d-none");
-            
+
+            // Update results title
+            const titleEl = document.getElementById("achiev_title");
+            const isDone = data.parent.done;
+            const wowheadUrl = `https://www.wowhead.com/achievement=${data.parent.id}`;
+
+            const checkbox = isDone ? "✅" : "";
+            titleEl.innerHTML = `
+            ${checkbox} <a href="${wowheadUrl}" target="_blank" rel="noopener noreferrer">
+                ${data.parent.name}
+            </a> (${data.character}-${params.get('server')})`; 
+
+            if (isDone) {
+                titleEl.classList.add('completed');
+            } else {
+                titleEl.classList.remove('completed');
+            }
+
             // refresh links for Wowhead Power addon if it exists
             if (typeof $WowheadPower !== "undefined") {
                 $WowheadPower.refreshLinks();

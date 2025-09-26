@@ -40,7 +40,7 @@ async def collect_steps(session, ach_id, server, character, depth=0):
 
     parent_info = {
         "id": data.get("id", ach_id),
-        "done": data.get("completed", False),
+        "done": data.get("completed", False) or (data.get("time") is not None),
         "name": data.get("name", ""),
         "description": data.get("description", ""),
         "icon": data.get("icon", {}).get("url"),
