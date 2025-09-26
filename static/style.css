@@ -132,36 +132,100 @@ ul.collapse.show {
     max-height: 2000px;
 }
 
+#title {
+    max-height: 500px;
+    overflow: hidden;
+    margin-top: 3rem;
+    transition:
+        max-height 0.4s ease-in,
+        opacity 0.4s ease-in,
+        margin 0.4s ease-in;
+}
+
+#title.showing {
+  transition-timing-function: ease-out;
+}
+
+#title.collapsed {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: max-height 0.4s ease, opacity 0.4s ease;
+    margin-top: 0;
+}
+
 #achForm {
     max-width: 600px;
     margin: auto;
+    overflow: hidden;
+    padding: 1.5rem;
+    max-height: 1000px;
+    transition:
+        max-height 0.4s ease-in,
+        opacity 0.4s ease-in,
+        padding 0.4s ease-in,
+        margin 0.4s ease-in;
+}
+
+#achForm.showing {
+  transition-timing-function: ease-out;
+}
+
+#achForm.collapsed {
+    max-height: 0;
+    opacity: 0;
+    pointer-events: none;
+    padding: 0;
+    transition: max-height 0.4s ease, opacity 0.4s ease;
+}
+
+#formToggle {
+    cursor: pointer;
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    text-align: center;
+    align-self: flex-end;
+    padding: 4px 8px;
+    background-color: #342F2F;
+    border: none;
+    border-radius: 0.25rem;
+    transition: background-color 0.3s ease;
+    transition: height 0.5s, opacity 0.3s;
+    transition-timing-function: linear;
+}
+
+#toggleRow {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+    transition: margin-top 0.4s ease;
 }
 
 /* Match dark form theme */
 .select2-container--bootstrap4 .select2-selection {
-  border: 1px solid #495057;
-  border-radius: 0.25rem;
-  min-height: calc(2.25rem + 2px);
+    border: 1px solid #495057;
+    border-radius: 0.25rem;
+    min-height: calc(2.25rem + 2px);
 }
 
 /* Text inside */
 .select2-container--bootstrap4 .select2-selection__rendered {
-  line-height: 2.25rem;
-  padding-left: 0.75rem;
+    line-height: 2.25rem;
+    padding-left: 0.75rem;
 }
 
 /* Dropdown menu */
 .select2-dropdown {
-  background-color: #343a40 !important;
-  border: 1px solid #495057;
+    background-color: #343a40 !important;
+    border: 1px solid #495057;
 }
 
 /* Options */
 .select2-results__option {
-  color: #fff !important;
-  padding: 0.5rem;
+    color: #fff !important;
+    padding: 0.5rem;
 }
 .select2-results__option--highlighted {
-  background-color: #28a745 !important; /* Bootstrap success green */
-  color: #fff !important;
+    background-color: #28a745 !important; /* Bootstrap success green */
+    color: #fff !important;
 }

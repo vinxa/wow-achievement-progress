@@ -15,37 +15,42 @@
   <script src="https://wow.zamimg.com/js/tooltips.js"></script>
 </head>
 <body class="text-light">
-  <div class="container mt-5">
+  <div class="container">
     <h1 id="title" class="text-center">Achievement Progress</h1>
-    <form id="achForm" class="p-4 bg-dark rounded">
-      <div class="form-group">
-        <label>Character</label>
-        <input name="character" class="form-control" required>
-      </div>
+    <div id="formWrapper">
+      <form id="achForm" class="bg-dark rounded">
+        <div class="form-group">
+          <label>Character</label>
+          <input name="character" class="form-control" required>
+        </div>
 
-      <div class="form-group">
-        <label>Region</label>
-        <select id="regionSelect" class="form-control">
-          <option value="us" selected>US</option>
-          <option value="eu">EU</option>
-          <option value="kr">KR</option>
-          <option value="tw">TW</option>
-        </select>
-      </div>
+        <div class="form-group">
+          <label>Region</label>
+          <select id="regionSelect" class="form-control">
+            <option value="us" selected>US</option>
+            <option value="eu">EU</option>
+            <option value="kr">KR</option>
+            <option value="tw">TW</option>
+          </select>
+        </div>
 
-      <div class="form-group">
-        <label>Server</label>
-        <select id="serverSelect" name="server" class="form-control" required></select>
-      </div>
+        <div class="form-group">
+          <label>Server</label>
+          <select id="serverSelect" name="server" class="form-control" required></select>
+        </div>
 
-      <div class="form-group">
-        <label id="achiev_label">Achievement ID</label>
-        <small class="form-text text-muted mt-0 d-none" id="suggestions">Please enter a valid achievement id number.</small>
-        <select name="ach_id" id="ach_id" class="form-control" required></select>
-      </div>
+        <div class="form-group">
+          <label id="achiev_label">Achievement ID</label>
+          <small class="form-text text-muted mt-0 d-none" id="suggestions">Please enter a valid achievement id number.</small>
+          <select name="ach_id" id="ach_id" class="form-control" required></select>
+        </div>
 
-      <button id="generateButton" type="submit" class="btn btn-success mt-3 hover-mask">Generate</button>
-    </form>
+        <button id="generateButton" type="submit" class="btn btn-success mt-3 hover-mask">Generate</button>
+      </form>
+      <div id="toggleRow">
+        <button id="formToggle" class="btn btn-secondary d-none">▲ Show Form</button>
+      </div>
+    </div>
     <h2 id="achiev_title"></h2>
     <div id="results"></div>
     <div id="loading" class="text-center mt-3" style="display: none;">

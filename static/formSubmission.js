@@ -58,6 +58,9 @@ function renderSteps(steps, depth = 0, parentDone = false, characterServerSlug =
 
 function generateAchievementProgress(e) {
     e.preventDefault();
+    const form = document.getElementById('achForm');
+    const toggle = document.getElementById('formToggle');
+
     const params = new URLSearchParams(new FormData(e.target));
     console.log(params);
     document.getElementById('loading').style.display = 'block';
@@ -70,6 +73,8 @@ function generateAchievementProgress(e) {
         .then(data => {
             if (data.error) {
                 results.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                form.classList.remove('collapsed');
+                toggle.classList.add('d-none');
                 return;
             }
             results.innerHTML = '';
@@ -79,6 +84,7 @@ function generateAchievementProgress(e) {
 
             results.appendChild(renderSteps(data.steps, 0, false, characterServerSlug));
             document.getElementById('loading').style.display = 'none';
+            document.getElementById('title').classList.add('collapsed');
             document.getElementById("generateButton").disabled = false;
             document.getElementById("achiev_title").innerText = `${data.parent.name} (${data.character}-${params.get('server')})`;
             
@@ -86,6 +92,10 @@ function generateAchievementProgress(e) {
             if (typeof $WowheadPower !== "undefined") {
                 $WowheadPower.refreshLinks();
             }
+
+            form.classList.add('collapsed');
+            toggle.classList.remove('d-none');
+            toggle.innerText = "▼ Show Form";
         });
 }
 
@@ -103,5 +113,30 @@ function toggleCollapse(e) {
     if (target) target.classList.toggle('show');
 }
 
+// Toggle button listener
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById('achForm');
+    const toggle = document.getElementById('formToggle');
+
+    toggle.addEventListener("click", () => {
+        if (form.classList.contains('collapsed')) {
+            form.classList.remove('collapsed');
+            toggle.innerText = "▲ Hide Form";
+            document.getElementById('title').classList.remove('collapsed');
+            document.getElementById('title').classList.add('showing');
+            setTimeout(() => {
+                form.classList.remove('showing');
+                document.getElementById('title').classList.remove('showing');
+            }, 400);
+        } else {
+            form.classList.add('collapsed');
+            toggle.innerText = "▼ Show Form";
+            document.getElementById('title').classList.add('collapsed');
+            
+        }
+    });
+});
+
 document.getElementById('achForm').addEventListener('submit', generateAchievementProgress);
 document.getElementById('results').addEventListener('click', toggleCollapse);
+
