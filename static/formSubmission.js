@@ -62,6 +62,7 @@ function generateAchievementProgress(e) {
     console.log(params);
     document.getElementById('loading').style.display = 'block';
     document.getElementById("generateButton").disabled = true;
+    document.getElementById("achiev_title").innerText = "";
     const results = document.getElementById('results');
     results.innerHTML = '';
     fetch('/achievement?' + params.toString())
@@ -79,9 +80,9 @@ function generateAchievementProgress(e) {
             results.appendChild(renderSteps(data.steps, 0, false, characterServerSlug));
             document.getElementById('loading').style.display = 'none';
             document.getElementById("generateButton").disabled = false;
-            document.getElementById("title").innerText = `${data.parent.name} ${data.character}-${params.get('server')}`;
+            document.getElementById("achiev_title").innerText = `${data.parent.name} (${data.character}-${params.get('server')})`;
+            
             // refresh links for Wowhead Power addon if it exists
-            // makes sure links are correct after page is updated
             if (typeof $WowheadPower !== "undefined") {
                 $WowheadPower.refreshLinks();
             }
