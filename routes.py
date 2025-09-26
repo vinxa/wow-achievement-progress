@@ -19,6 +19,9 @@ def get_achievement():
     steps, parent_info = achievement_api.get_achievement_progress(
         int(ach_id), server, character)
 
+    if isinstance(steps, dict) and "error" in steps:
+        return jsonify(steps), 404
+
     return jsonify({
         "ach_id": ach_id,
         "character": character,

@@ -75,6 +75,8 @@ function generateAchievementProgress(e) {
                 results.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
                 form.classList.remove('collapsed');
                 toggle.classList.add('d-none');
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById("generateButton").disabled = false;
                 return;
             }
             results.innerHTML = '';

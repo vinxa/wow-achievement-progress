@@ -26,12 +26,16 @@ async def fetch_achievement(session, ach_id, server, character):
             return await resp.json()
     except Exception as e:
         print(f"[ERROR] Failed to fetch achievement: {e}")
-        return {}
+        return {"error": f"Failed to fetch achievement {ach_id}: {e}"}
 
 async def collect_steps(session, ach_id, server, character, depth=0):
     data = await fetch_achievement(session, ach_id, server, character)
+    if "error" in data:
+        return {"error": data["error"]}, {}
+
     if not data:
-        return []
+        return [], {}
+    
     data = data.get("achievement", data)
 
     parent_info = {
