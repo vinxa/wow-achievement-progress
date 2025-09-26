@@ -5,7 +5,7 @@ from services import achievement_api, realm_api
 routes_bp = Blueprint("routes", __name__)
 @routes_bp.route("/")
 def index():
-    return render_template("index.html", title="WoW Achievement Progress")
+    return render_template("index.html")
 
 @routes_bp.route("/achievement")
 def get_achievement():
