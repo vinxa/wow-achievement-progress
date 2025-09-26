@@ -10,7 +10,7 @@ REGION_URLS = {
     "kr": "https://worldofwarcraft.blizzard.com/ko-kr/graphql",
     "tw": "https://worldofwarcraft.blizzard.com/zh-tw/graphql",
 }
-_realms_cache = {"timestamp": 0, "data": []}
+_realms_cache: dict[str, dict] = {}
 
 async def fetch_realms(region):
     url = REGION_URLS.get(region, REGION_URLS["us"])
@@ -90,7 +90,8 @@ async def fetch_realms(region):
 
 def get_realms(region):
     now = time.time()
-    if region not in _realms_cache or now - _realms_cache[region]["timestamp"] > 6 * 3600:
+    one_day = 24 * 3600
+    if region not in _realms_cache or now - _realms_cache[region]["timestamp"] > one_day:
         realms = asyncio.run(fetch_realms(region))
         _realms_cache[region] = {"timestamp": now, "data": realms}
 
