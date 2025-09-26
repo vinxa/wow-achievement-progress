@@ -52,6 +52,9 @@
       </div>
     </div>
     <h2 id="achiev_title"></h2>
+    <div id="buttonRow" class="d-flex justify-content-center mb-2">
+      <button id="filterButton" class="btn btn-outline-warning d-none">Hide Completed</button>
+    </div>
     <div id="results"></div>
     <div id="loading" class="text-center mt-3" style="display: none;">
       <div class="spinner-border text-light" role="status">
@@ -60,6 +63,7 @@
       <p class="mt-2">Loading...</p>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='buttons.js') }}"></script>
   <script src="{{ url_for('static', filename='formSubmission.js') }}"></script>
   <script src="{{ url_for('static', filename='serverSelection.js') }}"></script>
   <script src="{{ url_for('static', filename='formSuggestions.js') }}"></script>

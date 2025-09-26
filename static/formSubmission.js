@@ -66,6 +66,7 @@ function generateAchievementProgress(e) {
     document.getElementById('loading').style.display = 'block';
     document.getElementById("generateButton").disabled = true;
     document.getElementById("achiev_title").innerText = "";
+    document.getElementById("filterButton").classList.add("d-none");
     const results = document.getElementById('results');
     results.innerHTML = '';
     fetch('/achievement?' + params.toString())
@@ -89,6 +90,7 @@ function generateAchievementProgress(e) {
             document.getElementById('title').classList.add('collapsed');
             document.getElementById("generateButton").disabled = false;
             document.getElementById("achiev_title").innerText = `${data.parent.name} (${data.character}-${params.get('server')})`;
+            document.getElementById("filterButton").classList.remove("d-none");
             
             // refresh links for Wowhead Power addon if it exists
             if (typeof $WowheadPower !== "undefined") {
@@ -101,44 +103,5 @@ function generateAchievementProgress(e) {
         });
 }
 
-function toggleCollapse(e) {
-    const item = e.target.closest('.list-group-item-action');
-    if (!item) return;
-    if (e.target.tagName === "A") return;
-
-    const arrow = item.querySelector('.happyarrow, .sadarrow');
-    if (arrow) arrow.classList.toggle('down');
-
-    const targetSel = item.getAttribute('data-target');
-    if (!targetSel) return;
-    const target = document.querySelector(targetSel);
-    if (target) target.classList.toggle('show');
-}
-
-// Toggle button listener
-document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById('achForm');
-    const toggle = document.getElementById('formToggle');
-
-    toggle.addEventListener("click", () => {
-        if (form.classList.contains('collapsed')) {
-            form.classList.remove('collapsed');
-            toggle.innerText = "▲ Hide Form";
-            document.getElementById('title').classList.remove('collapsed');
-            document.getElementById('title').classList.add('showing');
-            setTimeout(() => {
-                form.classList.remove('showing');
-                document.getElementById('title').classList.remove('showing');
-            }, 400);
-        } else {
-            form.classList.add('collapsed');
-            toggle.innerText = "▼ Show Form";
-            document.getElementById('title').classList.add('collapsed');
-            
-        }
-    });
-});
-
 document.getElementById('achForm').addEventListener('submit', generateAchievementProgress);
-document.getElementById('results').addEventListener('click', toggleCollapse);
 

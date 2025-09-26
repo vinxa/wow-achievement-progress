@@ -46,6 +46,9 @@ body::before {
     margin-bottom: 0.5rem;
     border-radius: 8px;
     transition: background var(--transition-speed);
+    transition: max-height 0.4s ease, opacity 0.4s ease, margin 0.4s ease;
+    overflow: hidden;
+    max-height: 200px;
 }
 
 .list-group-item:hover {
@@ -143,7 +146,7 @@ ul.collapse.show {
 }
 
 #title.showing {
-  transition-timing-function: ease-out;
+    transition-timing-function: ease-out;
 }
 
 #title.collapsed {
@@ -168,7 +171,7 @@ ul.collapse.show {
 }
 
 #achForm.showing {
-  transition-timing-function: ease-out;
+    transition-timing-function: ease-out;
 }
 
 #achForm.collapsed {
@@ -225,7 +228,26 @@ ul.collapse.show {
     color: #fff !important;
     padding: 0.5rem;
 }
+
 .select2-results__option--highlighted {
-    background-color: #28a745 !important; /* Bootstrap success green */
+    background-color: #28a745 !important;
+    /* Bootstrap success green */
     color: #fff !important;
+}
+
+.hidden-done {
+    max-height: 0 !important;
+    opacity: 0 !important;
+    margin: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    border: 0 !important;
+}
+
+#filterButton {
+    padding: .25rem .5rem;
+    font-size: 0.6rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+    margin-top: 0.5rem;
 }
