@@ -67,6 +67,7 @@ function generateAchievementProgress(e) {
     document.getElementById("generateButton").disabled = true;
     document.getElementById("achiev_title").innerText = "";
     document.getElementById("filterButton").classList.add("d-none");
+    document.getElementById("exportButton").classList.add("d-none");
     const results = document.getElementById('results');
     results.innerHTML = '';
     fetch('/achievement?' + params.toString())
@@ -91,6 +92,7 @@ function generateAchievementProgress(e) {
             document.getElementById("generateButton").disabled = false;
             document.getElementById("achiev_title").innerText = `${data.parent.name} (${data.character}-${params.get('server')})`;
             document.getElementById("filterButton").classList.remove("d-none");
+            document.getElementById("exportButton").classList.remove("d-none");
             
             // refresh links for Wowhead Power addon if it exists
             if (typeof $WowheadPower !== "undefined") {
@@ -100,6 +102,7 @@ function generateAchievementProgress(e) {
             form.classList.add('collapsed');
             toggle.classList.remove('d-none');
             toggle.innerText = "▼ Show Form";
+            filterResults(filterActive);
         });
 }
 

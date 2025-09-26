@@ -244,7 +244,9 @@ ul.collapse.show {
     border: 0 !important;
 }
 
-#filterButton {
+.btn-bar-btn {
+    margin-right: 0.5rem;
+    margin-left: 0.5rem;
     padding: .25rem .5rem;
     font-size: 0.6rem;
     line-height: 1.5;
