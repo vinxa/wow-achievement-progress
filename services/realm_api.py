@@ -3,6 +3,11 @@
 import aiohttp
 import asyncio
 import time
+import json
+from pathlib import Path
+
+CACHE_FILE = Path(__file__).parent / "realms_cache.json"
+CACHE_TTL = 24 * 3600  # 1 day
 
 REGION_URLS = {
     "us": "https://worldofwarcraft.blizzard.com/en-us/graphql",
@@ -90,9 +95,29 @@ async def fetch_realms(region):
 
 def get_realms(region):
     now = time.time()
-    one_day = 24 * 3600
-    if region not in _realms_cache or now - _realms_cache[region]["timestamp"] > one_day:
+    if CACHE_FILE.exists():
+        try:
+            with open(CACHE_FILE, "r") as f:
+                cache = json.load(f)
+            entry = cache.get(region)
+            if entry and now - entry["timestamp"] < CACHE_TTL:
+                return entry["data"]
+        except Exception:
+            pass  # corrupted cache, ignore
+        
+    try:
         realms = asyncio.run(fetch_realms(region))
-        _realms_cache[region] = {"timestamp": now, "data": realms}
+    except Exception as e:
+        print(f"Fetch failed: {e}, using stale cache")
+        if entry:  # from file
+            return entry["data"]
+        realms = []
 
-    return _realms_cache[region]["data"]
+    # save back to cache
+    try:
+        with open(CACHE_FILE, "w") as f:
+            json.dump(cache, f)
+    except Exception as e:
+        print("Failed to write cache:", e)
+
+    return realms
