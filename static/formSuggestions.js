@@ -1,8 +1,14 @@
 const suggestedAchievements = [
+    {"id": 60889, "name": "Unravelled and Persevering"},
+    {"id": 41997, "name": "Owner of a Radiant Heart"},
+    {"id": 41586, "name": "Going Goblin Mode"},
+    {"id": 40438, "name": "Glory of the Delver"},
+    {"id": 40231, "name": "The War Within Pathfinder"},
+    { "id": 41555, "name": "All That Khaz"},
     { "id": 41201, "name": "You Xal Not Pass"},
     { "id": 19458, "name": "A World Awoken (Dragonflight)" },
     { "id": 20501, "name": "Back from the Beyond (Shadowlands)" },
-    { "id": 40953, "name": "A Farewell to Arms (Battle for Azeroth)" },
+    { "id": 40953, "name": "A Farewell to Arms (Battle for Azeroth)" }
 ]
 
 /**
