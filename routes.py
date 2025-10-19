@@ -1,6 +1,6 @@
 # routes.py
 from flask import Blueprint, request, jsonify, render_template
-from services import achievement_api, realm_api, achievement_index_api
+from services import achievement_api, realm_api, achievement_index_api, achievement_api_new
 from services.helpers import validate_inputs
 from services.rate_limiter import limiter
 
@@ -25,21 +25,9 @@ def get_achievement():
         ach_id, server, character, server_name = validate_inputs(server, character, ach_id, region)
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
-
-    steps, parent_info = achievement_api.get_achievement_progress(
-        int(ach_id), server, character)
-
-    if isinstance(steps, dict) and "error" in steps:
-        return jsonify(steps), 404
-
-    return jsonify({
-        "ach_id": ach_id,
-        "character": character,
-        "server": server,
-        "server_name": server_name,
-        "parent": parent_info,
-        "steps": steps
-    })
+    
+    result = achievement_api_new.get_achievement_progress(ach_id, region, server, character)
+    return jsonify(result)
 
 @routes_bp.route("/realms")
 def get_realms():

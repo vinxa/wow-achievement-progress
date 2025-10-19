@@ -1,18 +1,14 @@
 # app/services/blizzard_api.py
 import asyncio
 import aiohttp
-from pathlib import Path
-from .helpers import iso_to_seconds, sanitize_slug
-import os
 import time
 import json
+from pathlib import Path
+from .helpers import fetch_access_token
 
 AUTH_URL = "https://oauth.battle.net/token"
 CACHE_FILE = Path(__file__).parent / "achievements_cache.json"
 CACHE_TTL = 24 * 3600
-TOKEN_URL = "https://oauth.battle.net/token"
-
-_token_cache = {"access_token": None, "expires_at": 0.0}
 
 def build_achievement_index_url(region):
     region = (region or "us").strip().lower()
@@ -20,34 +16,6 @@ def build_achievement_index_url(region):
         f"https://{region}.api.blizzard.com/data/wow/achievement/index"
         f"?namespace=static-{region}&locale=en_US"
     )
-
-async def fetch_access_token():
-    if _token_cache["access_token"] and _token_cache["expires_at"] > time.time():
-        return _token_cache["access_token"]
-    
-    client_id = os.getenv("CLIENT_ID")
-    client_secret = os.getenv("CLIENT_SECRET")
-    if not client_id or not client_secret:
-        raise ValueError("Missing CLIENT_ID or CLIENT_SECRET environment variables")
-
-    data = {"grant_type": "client_credentials"}
-    auth = aiohttp.BasicAuth(client_id, client_secret)
-    print(f"[DEBUG] Fetching token from {AUTH_URL}...")
-    try:
-        async with aiohttp.ClientSession(auth=auth) as session:
-            async with session.post(AUTH_URL, data=data) as resp:
-                resp.raise_for_status()
-                result = await resp.json()
-        token = result.get("access_token")
-        expires_in = result.get("expires_in", 0)
-        if not token:
-            raise RuntimeError(f"Unexpected token response: {result}")
-        _token_cache["access_token"] = token
-        _token_cache["expires_at"] = time.time() +  + max(int(expires_in) - 60, 0)  # Expire minute early
-        return token
-    except Exception as e:
-        print(f"[ERROR] Failed to fetch token: {e}")
-        return {"error": f"Failed to fetch token: {e}"}
 
 async def fetch_achievement_index(region):
     token = await fetch_access_token()

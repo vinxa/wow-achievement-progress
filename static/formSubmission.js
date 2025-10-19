@@ -56,7 +56,7 @@ function renderSteps(steps, depth = 0, parentDone = false, characterServerSlug =
     return ul;
 }
 
-function generateAchievementProgress(e) {
+async function generateAchievementProgress(e) {
     e.preventDefault();
     const form = document.getElementById('achForm');
     const toggle = document.getElementById('formToggle');
@@ -67,9 +67,34 @@ function generateAchievementProgress(e) {
     document.getElementById("achiev_title").innerText = "";
     document.getElementById("filterButton").classList.add("d-none");
     document.getElementById("exportButton").classList.add("d-none");
+    const region    = params.get('region') || 'us';
+    const server     = params.get('server');
+    const character = params.get('character');
+    const achId     = params.get('id');
     const results = document.getElementById('results');
     results.innerHTML = '';
-    fetch('/achievement?' + params.toString())
+    const progress = await getAchievementProgress(region, server, character, achId);
+    if (!progress) {
+        results.innerHTML = `<div class="alert alert-danger">Achievement not found</div>`;
+        form.classList.remove('collapsed');
+        toggle.classList.add('d-none');
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById("generateButton").disabled = false;
+        return;
+    }
+    const data = {
+    character: character,
+    server: server,
+    server_name: serve_name,
+    parent: {
+        id: progress.id,
+        name: progress.name,
+        done: progress.done,
+        time: progress.time,
+    },
+    steps: progress.children || [],
+    };
+    /* fetch('/achievement?' + params.toString())
         .then(resp => resp.json())
         .then(data => {
             if (data.error) {
@@ -79,7 +104,7 @@ function generateAchievementProgress(e) {
                 document.getElementById('loading').style.display = 'none';
                 document.getElementById("generateButton").disabled = false;
                 return;
-            }
+            } */
             results.innerHTML = '';
 
             const characterServerSlug = `${data.character}-${data.server}`.replace(/[^A-Za-z0-9-]/g, '');
@@ -118,7 +143,7 @@ function generateAchievementProgress(e) {
             toggle.classList.remove('d-none');
             toggle.innerText = "▼ Show Form";
             filterResults(filterActive);
-        });
+        /*});*/
 }
 
 document.getElementById('achForm').addEventListener('submit', generateAchievementProgress);
