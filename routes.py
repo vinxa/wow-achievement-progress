@@ -1,7 +1,6 @@
 # routes.py
 from flask import Blueprint, request, jsonify, render_template
-from services import achievement_api, realm_api
-from services import achievement_api
+from services import achievement_api, realm_api, achievement_index_api
 from services.helpers import validate_inputs
 from services.rate_limiter import limiter
 
@@ -47,3 +46,13 @@ def get_realms():
     region = request.args.get("region", "us")
     realms = realm_api.get_realms(region)
     return jsonify(realms)
+
+@routes_bp.route("/achievements")
+def get_achievements():
+    query = request.args.get("q")
+    region = request.args.get("region", "us")
+    if query:
+        return jsonify(achievement_index_api.search_achievements(query, region))
+    else:
+        return jsonify(achievement_index_api.get_static_achievement_index(region))
+    

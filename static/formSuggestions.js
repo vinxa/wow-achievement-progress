@@ -11,21 +11,38 @@ const suggestedAchievements = [
     { "id": 40953, "name": "A Farewell to Arms (Battle for Azeroth)" }
 ]
 
+async function loadAchievementSuggestions() {
+    const regionSelect = $("#regionSelect");
+    const region = localStorage.getItem("region") || "us";
+    const resp = await fetch(`/achievements?region=${region}&t=${Date.now()}`);
+    const achList = await resp.json();
+    if (!achList) {
+        return suggestedAchievements.map(ach => ({
+        id: ach.id,
+        text: `${ach.id} - ${ach.name}`
+        }));
+    }
+    return achList
+        .sort((a,b) => b.id - a.id)
+        .map(ach => ({
+            id: ach.id,
+            text: `${ach.id} - ${ach.name}`
+        }));
+}
+
 /**
  * Achievement id dropdown - select from achievement list, or type a custom id.
  * Sets up event listener for dropdown to focus search box when opened.
  */
-function setupFormSuggestions() {
+async function setupFormSuggestions() {
     const achieve_select = $("#ach_id");
+    const suggestions = await loadAchievementSuggestions();
     achieve_select.select2({
         theme: "bootstrap4",
         placeholder: "Select or type an achievement id",
         allowClear: true,
-        tags: true,
-        data: suggestedAchievements.map(ach => ({
-            id: ach.id,
-            text: `${ach.id} - ${ach.name}`
-        })),
+        tags: false,
+        data: suggestions,
         createTag: function (params) {
             const term = $.trim(params.term);
             // Only allow numeric custom id
