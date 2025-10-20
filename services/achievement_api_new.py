@@ -38,11 +38,11 @@ def parse_character_achievements(data):
         for c in criteria_list or []:
             node = {
                 "id": c.get("id"),
-                "name": c.get("description", ""),
-                "done": c.get("is_completed", False),
+                "n": c.get("description", ""),
+                "c": c.get("is_completed", False),
                 "count": c.get("quantity", 0),
                 "total": c.get("max_quantity", 0),
-                "children": parse_criteria(c.get("child_criteria")),
+                "criteria": parse_criteria(c.get("child_criteria")),
             }
             children.append(node)
         return children
@@ -52,17 +52,17 @@ def parse_character_achievements(data):
         ach_obj = ach.get("achievement", {})
         node = {
             "id": ach_obj.get("id"),
-            "name": ach_obj.get("name"),
-            "description": ach_obj.get("description"),
-            "done": ach.get("completed", False)
+            "n": ach_obj.get("name"),
+            "c": ach.get("completed", False)
             or bool(ach.get("completed_timestamp")),
-            "time": ach.get("completed_timestamp"),
+            "t": ach.get("completed_timestamp"),
             "criteria": parse_criteria(ach.get("criteria", {}).get("child_criteria")),
         }
         parsed.append(node)
     return parsed
 
 def get_character_achievements(region, realm, character):
+    realm = sanitize_slug(realm)
     data = asyncio.run(fetch_character_achievements(region, realm, character))
     return data
 
@@ -88,6 +88,7 @@ def get_achievement_progress(ach_id, region, server, character):
     try:
         ach_id = int(ach_id)
     except ValueError:
+        print("Invalid ach id")
         return {"error": "Invalid achievement id"}
     
     achievements = get_character_achievements(region, sanitize_slug(server), character)
@@ -116,7 +117,3 @@ def get_achievement_progress(ach_id, region, server, character):
         "time": node.get("time"),
         "progress": progress,
     }
-
-
-
-

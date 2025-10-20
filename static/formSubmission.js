@@ -67,10 +67,10 @@ async function generateAchievementProgress(e) {
     document.getElementById("achiev_title").innerText = "";
     document.getElementById("filterButton").classList.add("d-none");
     document.getElementById("exportButton").classList.add("d-none");
-    const region    = params.get('region') || 'us';
-    const server     = params.get('server');
+    const region = params.get('region') || 'us';
+    const server = params.get('server');
     const character = params.get('character');
-    const achId     = params.get('id');
+    const achId = params.get('ach_id');
     const results = document.getElementById('results');
     results.innerHTML = '';
     const progress = await getAchievementProgress(region, server, character, achId);
@@ -82,10 +82,11 @@ async function generateAchievementProgress(e) {
         document.getElementById("generateButton").disabled = false;
         return;
     }
+    console.log(progress);
     const data = {
     character: character,
     server: server,
-    server_name: serve_name,
+    server_name: server,
     parent: {
         id: progress.id,
         name: progress.name,

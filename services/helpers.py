@@ -35,7 +35,7 @@ def fetch_access_token():
         print(f"[ERROR] Failed to fetch token: {e}")
         return {"error": f"Failed to fetch token: {e}"}
 
-def validate_inputs(server, character, ach_id, region):
+def validate_inputs(server, character, region):
     realms = get_realms(region)
 
     server_obj = next(
@@ -45,7 +45,7 @@ def validate_inputs(server, character, ach_id, region):
     if not server_obj:
         raise ValueError(f"Invalid server: {server}")
 
-    return int(ach_id), server_obj["slug"], character, server_obj["name"]
+    return server_obj["slug"], character, server_obj["name"]
 
 
 def sanitize_slug(text: str) -> str:

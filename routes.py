@@ -15,18 +15,19 @@ def get_achievement():
     print(request.args)
     character = request.args.get("character")
     server = request.args.get("server")
-    ach_id = request.args.get("ach_id")
+    # ach_id = request.args.get("ach_id")
     region = request.args.get("region", "us")
 
-    if not all([character, server, ach_id]):
+    if not all([character, server]):
         return jsonify({"error": "Missing required fields"}), 400
     
     try:
-        ach_id, server, character, server_name = validate_inputs(server, character, ach_id, region)
+         server, character, server_name = validate_inputs(server, character, region)
     except ValueError as e:
         return jsonify({"error": str(e)}), 400
     
-    result = achievement_api_new.get_achievement_progress(ach_id, region, server, character)
+    result = achievement_api_new.get_character_achievements(region, server, character)
+    #get_achievement_progress(ach_id, region, server, character, cache)
     return jsonify(result)
 
 @routes_bp.route("/realms")
