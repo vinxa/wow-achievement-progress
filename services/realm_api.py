@@ -6,7 +6,6 @@ import time
 import json
 from pathlib import Path
 
-
 CACHE_FILE = Path(__file__).parent / "realms_cache.json"
 CACHE_TTL = 24 * 3600  # 1 day
 

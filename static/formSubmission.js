@@ -82,6 +82,14 @@ async function generateAchievementProgress(e) {
         document.getElementById("generateButton").disabled = false;
         return;
     }
+    if ("error" in progress) {
+        results.innerHTML = `<div class="alert alert-danger">${progress.error}</div>`;
+        form.classList.remove('collapsed');
+        toggle.classList.add('d-none');
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById("generateButton").disabled = false;
+        return;
+    }
     console.log(progress);
     const data = {
     character: character,
