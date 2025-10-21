@@ -1,4 +1,6 @@
 # routes.py
+import time
+import os
 from flask import Blueprint, request, jsonify, render_template
 from services import achievement_api, realm_api, achievement_index_api, achievement_api_new
 from services.helpers import validate_inputs
@@ -38,10 +40,26 @@ def get_realms():
 
 @routes_bp.route("/achievements")
 def get_achievements():
-    query = request.args.get("q")
     region = request.args.get("region", "us")
-    if query:
-        return jsonify(achievement_index_api.search_achievements(query, region))
-    else:
-        return jsonify(achievement_index_api.get_static_achievement_index(region))
-    
+    return jsonify(achievement_index_api.get_static_achievement_index(region))
+
+@routes_bp.route("/achievements/tree")
+async def preload_achievement_tree():
+    region = request.args.get("region", "us")
+    result = await achievement_index_api.get_static_achievement_tree(region)
+    return jsonify(result)
+
+@routes_bp.route("/status/cache")
+def cache_status():
+    tree_file = "services/achievement_tree_cache.json"
+    drop_file = "services/achievements_cache.json"
+    realms_file = "services/realms_cache.json"
+
+    def mod_time(path):
+        return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(os.path.getmtime(path))) if os.path.exists(path) else None
+
+    return jsonify({
+        "achievement_tree_last_updated": mod_time(tree_file),
+        "dropdown_cache_last_updated": mod_time(drop_file),
+        "realms_cache_last_updated": mod_time(realms_file)
+    })
