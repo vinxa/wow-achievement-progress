@@ -33,9 +33,9 @@ def get_achievement():
     return jsonify(result)
 
 @routes_bp.route("/realms")
-def get_realms():
+async def get_realms():
     region = request.args.get("region", "us")
-    realms = realm_api.get_realms(region)
+    realms = await realm_api.get_realms(region)
     return jsonify(realms)
 
 @routes_bp.route("/achievements")

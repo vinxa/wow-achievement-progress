@@ -110,7 +110,7 @@ async def get_static_achievement_tree(region):
             print("Loaded achievement tree from cache")
             return entry["data"]
 
-    index = get_static_achievement_index(region)
+    index = await get_static_achievement_index(region)
     token = fetch_access_token()
     visited = set()
     #results = []
@@ -132,7 +132,7 @@ async def get_static_achievement_tree(region):
 
     return results
 
-def get_static_achievement_index(region):
+async def get_static_achievement_index(region):
     # Figure out if we need to refetch index
     now = time.time()
     cache = {}
@@ -149,7 +149,7 @@ def get_static_achievement_index(region):
             print("Loaded achievements from cache")
             return entry["data"]
 
-    achievements = asyncio.run(fetch_achievement_index(region))
+    achievements = await fetch_achievement_index(region)
     cache[region] = {"timestamp": now, "data": achievements}
     try:
         tmp_file = DROPDOWN_CACHE_FILE.with_suffix(".tmp")

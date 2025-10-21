@@ -93,7 +93,7 @@ async def fetch_realms(region):
     return realms
 
 
-def get_realms(region):
+async def get_realms(region):
     now = time.time()
     cache = {}
 
@@ -113,7 +113,7 @@ def get_realms(region):
 
     # cache expired or missing
     print("Fetching realms from blizzard...")
-    realms = asyncio.run(fetch_realms(region))
+    realms = await fetch_realms(region)
 
     # update memory cache
     cache[region] = {"timestamp": now, "data": realms}

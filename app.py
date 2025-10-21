@@ -19,13 +19,22 @@ def create_app():
         return {"error": "Rate limit exceeded"}, 429
     
     scheduler = BackgroundScheduler()
-    scheduler.add_job(func=refresh_server_caches, trigger="interval", weeks=1)
+    def schedule_cache_refresh():
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = None
+
+        if loop and loop.is_running():
+            asyncio.create_task(refresh_server_caches())
+        else:
+            asyncio.run(refresh_server_caches())
+
+    scheduler.add_job(func=schedule_cache_refresh, trigger="interval", weeks=1)
     scheduler.start()
+
     print("[SCHEDULER] Running cache refresh on startup...")
-    try:
-        asyncio.run(refresh_server_caches())
-    except Exception as e:
-        print(f"[SCHEDULER] Startup cache refresh failed: {e}")
+    schedule_cache_refresh()
 
     return app
 
