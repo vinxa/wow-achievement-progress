@@ -1,5 +1,4 @@
-# Use a lightweight Python base image
-FROM python:3.13.7-slim
+FROM python:3.13.7-slim-alpine
 
 RUN apt-get update && apt-get install -y \
     build-essential \
