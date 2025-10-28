@@ -5,20 +5,15 @@ import asyncio
 import time
 import json
 from pathlib import Path
+from .helpers import region_lookup
 
 CACHE_FILE = Path(__file__).parent / "realms_cache.json"
 CACHE_TTL = 24 * 3600  # 1 day
-
-REGION_URLS = {
-    "us": "https://worldofwarcraft.blizzard.com/en-us/graphql",
-    "eu": "https://worldofwarcraft.blizzard.com/en-gb/graphql",
-    "kr": "https://worldofwarcraft.blizzard.com/ko-kr/graphql",
-    "tw": "https://worldofwarcraft.blizzard.com/zh-tw/graphql",
-}
 _realms_cache: dict[str, dict] = {}
 
 async def fetch_realms(region):
-    url = REGION_URLS.get(region, REGION_URLS["us"])
+    url = region_lookup(region).get("graphql_url")
+
     headers = {"User-Agent": "Mozilla/5.0", "Content-Type": "application/json"}
 
     # first try: persisted query only

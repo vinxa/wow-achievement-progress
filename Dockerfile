@@ -12,6 +12,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install gunicorn
 
 COPY . .
+RUN mkdir -p /data
+
 EXPOSE 5001
 
 CMD ["gunicorn", "-b", "0.0.0.0:5001", "app:create_app()"]

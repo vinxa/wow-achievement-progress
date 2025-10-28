@@ -32,12 +32,23 @@ async function loadRealms(region = "us", savedRealm = null, savedServer = null) 
     select.trigger("change.select2");
 }
 
+
+async function loadRegionAchievementTree() {
+    const region = localStorage.getItem("region") || "us";
+    const resp = await fetch(`/achievements/tree?region=${region}&t=${Date.now()}`);
+    const achList = await resp.json();
+    if (!achList) {
+        return {"error": "Error: Cannot load the static achievement tree."};
+    }
+    return achList
+}
+
 /**
  * Initializes select2 widget and loads list of realms into dropdown.
  * Sets up event listener for region select dropdown to load realm list.
  * Sets up event listener for server select dropdown to focus search box when opened.
  */
-function setupServerSelection() {
+async function setupServerSelection() {
     const serverSelect = $("#serverSelect");
     const regionSelect = $("#regionSelect");
 
@@ -52,9 +63,10 @@ function setupServerSelection() {
     regionSelect.val(savedRegion);
     loadRealms(savedRegion, savedServer);
 
-    regionSelect.on("change", function () {
+    regionSelect.on("change", async function () {
         loadRealms(this.value);
         localStorage.setItem("region", this.value);
+        await loadRegionAchievementTree(this.value);
     });
 
     serverSelect.on("change", function () {
@@ -73,4 +85,5 @@ function setupServerSelection() {
 
 $(document).ready(function () {
     setupServerSelection();
+    loadRegionAchievementTree(this.value);
 });

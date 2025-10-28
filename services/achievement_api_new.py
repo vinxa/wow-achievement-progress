@@ -3,12 +3,9 @@
 import asyncio
 import aiohttp
 import time
-from .helpers import (
-    iso_to_seconds,
-    sanitize_slug,
-    fetch_access_token
-)
-CACHE_TTL = 15 * 60  # Caches character data for 15 minutes
+from flask import current_app
+from .helpers import sanitize_slug
+from .auth_api import fetch_access_token
 
 async def fetch_character_achievements(region, realm, character):
     token = fetch_access_token()
@@ -42,6 +39,7 @@ def parse_character_achievements(data):
                 "c": c.get("is_completed", False),
                 "count": c.get("quantity", 0),
                 "total": c.get("max_quantity", 0),
+                "amount": c.get("amount", 0),
                 "criteria": parse_criteria(c.get("child_criteria")),
             }
             children.append(node)
@@ -50,21 +48,20 @@ def parse_character_achievements(data):
     parsed = []
     for ach in data.get("achievements", []):
         ach_obj = ach.get("achievement", {})
+        current_app.logger.info(ach)
         node = {
             "id": ach_obj.get("id"),
             "n": ach_obj.get("name"),
-            "c": ach.get("completed", False)
+            "desc" : ach_obj.get("description", ""),
+            "c": ach.get("is_completed", False)
             or bool(ach.get("completed_timestamp")),
             "t": ach.get("completed_timestamp"),
             "criteria": parse_criteria(ach.get("criteria", {}).get("child_criteria")),
         }
+        current_app.logger.info(node)
+        
         parsed.append(node)
     return parsed
-
-def get_character_achievements(region, realm, character):
-    realm = sanitize_slug(realm)
-    data = asyncio.run(fetch_character_achievements(region, realm, character))
-    return data
 
 def find_achievement_helper(target_id, achievements):
     def find_in_criteria(criteria_list):
@@ -85,35 +82,26 @@ def find_achievement_helper(target_id, achievements):
     return None
 
 def get_achievement_progress(ach_id, region, server, character):
-    try:
-        ach_id = int(ach_id)
-    except ValueError:
-        print("Invalid ach id")
-        return {"error": "Invalid achievement id"}
-    
-    achievements = get_character_achievements(region, sanitize_slug(server), character)
+    achievements = asyncio.run(fetch_character_achievements(region, sanitize_slug(server), character))
     node = find_achievement_helper(ach_id, achievements)
     if not node:
         return {"error": f"Achievement {ach_id} not found..."}
-    
+    progress = []
     if "criteria" in node:
-        progress = []
         for c in node["criteria"] or []:
             progress.append({
                 "id": c["id"],
-                "name": c["name"],
-                "done": c["done"],
+                "n": c["n"],
+                "c": c["c"],
                 "count": c.get("count", 0),
                 "total": c.get("total", 0),
             })
-    else:
-        progress = []
 
     return {
         "id": node.get("id"),
-        "name": node.get("name"),
-        "description": node.get("description"),
-        "done": node.get("done", False),
-        "time": node.get("time"),
+        "n": node.get("n"),
+        "desc": node.get("desc"),
+        "c": node.get("c", False),
+        "t": node.get("t"),
         "progress": progress,
     }

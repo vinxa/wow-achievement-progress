@@ -1,6 +1,6 @@
 const TTL_MS = 15 * 60 * 1000; // 15min cache
 
-async function loadCharacterAchievements(region, realm, character, id) {
+async function loadCharacterAchievements(region, realm, character) {
     const key = `achv_${region}_${realm}_${character}`.toLowerCase();
     const cached = localStorage.getItem(key);
     if (cached) {
@@ -12,24 +12,22 @@ async function loadCharacterAchievements(region, realm, character, id) {
     }
     const resp = await fetch(`/achievement?region=${region}&server=${realm}&character=${character}`);
     const data = await resp.json();
-    console.log(data);
-    localStorage.setItem(key, JSON.stringify({ timestamp: Date.now(), data }));
+    if (!("error:" in data)) localStorage.setItem(key, JSON.stringify({ timestamp: Date.now(), data }));
     return data;
 }
 
 function findAchievement(data, id) {
-    console.log(data);
     function searchCriteria(criteria) {
         for (const c of criteria || []) {
             if (c.id === id) return c;
-            const found = searchCriteria(c.children);
+            const found = searchCriteria(c.children || c.criteria);
             if (found) return found;
         }
         return null;
     }
     for (const ach of data || []) {
         if (ach.id === id) return ach;
-        const found = searchCriteria(ach.criteria);
+        const found = searchCriteria(ach.criteria || ach.children);
         if (found) return found;
     }
     return null;
@@ -37,5 +35,6 @@ function findAchievement(data, id) {
 
 async function getAchievementProgress(region, realm, character, achId) {
     const fullData = await loadCharacterAchievements(region, realm, character);
+    if ("error" in fullData) return {"error": "Error: Character not found! Please check your inputs."};
     return findAchievement(fullData, Number(achId));
 }
