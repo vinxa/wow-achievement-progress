@@ -1,8 +1,8 @@
 FROM python:3.14.0-alpine
 
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache \
+    build-base \
+    linux-headers
 
 COPY requirements.txt .
 
