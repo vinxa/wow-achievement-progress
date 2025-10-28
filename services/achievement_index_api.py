@@ -2,7 +2,6 @@
 import asyncio
 import aiohttp
 import time
-import json
 from pathlib import Path
 from aiolimiter import AsyncLimiter
 from flask import current_app
