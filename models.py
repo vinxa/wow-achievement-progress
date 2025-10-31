@@ -19,7 +19,7 @@ class AchievementIndex(TimestampMixin, db.Model):
     exists_kr = db.Column(db.Boolean, default=False)
     criteria_id = db.Column(db.Integer, db.ForeignKey("criteria.criteria_id"), nullable=True)
 
-    criteria = db.relationship("Criteria", back_populates="achievement")
+    criteria = db.relationship("Criteria", back_populates="achievement", foreign_keys="Criteria.achievement_id")
 
 
 class AchievementString(TimestampMixin, db.Model):

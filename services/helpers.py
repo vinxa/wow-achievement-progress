@@ -50,7 +50,7 @@ async def refresh_achievement_data():
     print("[SCHEDULER] Achievement db refresh complete.")
 
 def region_lookup(region):
-    return {
+    data = {
         "us": {"graphql_url": "https://worldofwarcraft.blizzard.com/en-us/graphql", 
                "locales": ["en_US","es_MX", "pt_BR"], "db_flag": "exists_us"},
         "eu": {"graphql_url": "https://worldofwarcraft.blizzard.com/en-gb/graphql", 
@@ -59,4 +59,6 @@ def region_lookup(region):
                "locales": ["ko_KR"], "db_flag": "exists_kr"},
         "tw": {"graphql_url": "https://worldofwarcraft.blizzard.com/zh-tw/graphql", 
                "locales": ["zh_TW"], "db_flag": "exists_tw"},
-    }.get(region, "us")
+    }
+    region = (region or "us").strip().lower()
+    return data.get(region, data["us"])

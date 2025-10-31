@@ -2,32 +2,24 @@
 import asyncio
 import aiohttp
 import time
-from pathlib import Path
 from aiolimiter import AsyncLimiter
 from flask import current_app
-from models import db, AchievementIndex
+from models import db, AchievementIndex, AchievementString
 from .auth_api import fetch_access_token
 from .helpers import region_lookup
 
-CACHE_DIR = Path(__file__).parent / "achievement_cache"
-CACHE_DIR.mkdir(exist_ok=True)
-CACHE_TTL = 24 * 3600 * 7  # 1 week
 CLIENT_TIMEOUT = aiohttp.ClientTimeout(total=30, connect=10, sock_read=20)
 MAX_RETRIES = 5
-RATE_DELAY = 0.2 
-CONCURRENT_LIMIT = 10
-RATE_LIMIT = AsyncLimiter(10, 1) # 5 per second
-CONCURRENCY_SEM = asyncio.Semaphore(CONCURRENT_LIMIT)
+#RATE_DELAY = 0.2 
+RATE_LIMIT = AsyncLimiter(80, 1)
 
 async def throttled_req(session, url, headers):
     # AsyncLimiter here as this controls how fast requests leave the process (how many per second). Delay makes it smooth - forces a delay between starts so they aren't all firing at exactly the same time.
     async with RATE_LIMIT:
-        await asyncio.sleep(RATE_DELAY)
+        #await asyncio.sleep(RATE_DELAY)
         return await session.get(url, headers=headers)
 
 async def fetch_json(session, url, headers, attempt=1):
-    # Semaphore here to limit concurrency (no more than x requests active at any time.)
-    async with CONCURRENCY_SEM:
         try:
             resp = await asyncio.wait_for(throttled_req(session, url, headers), timeout=30)
             if resp.status == 429:  # Rate limited
@@ -69,9 +61,9 @@ async def fetch_achievement_index(region, locale_string=""):
     # achievements = []
     return [{"id": a["id"], "name": a["name"]} for a in result.get("achievements", []) if a.get("id") and a.get("name")]
 
-async def fetch_achievement_details(session, region, ach_id, token):
-    locale = region_lookup(region)["locales"][0]
-    url = f"https://{region}.api.blizzard.com/data/wow/achievement/{ach_id}?namespace=static-{region}&locale={locale}"
+async def fetch_achievement_details(session, ach_id, token):
+    region = "us"
+    url = f"https://{region}.api.blizzard.com/data/wow/achievement/{ach_id}?namespace=static-{region}"
     headers = {"Authorization": f"Bearer {token}"}
     print(f"Fetching achievement {ach_id} details from {url}...")
     try:
@@ -124,22 +116,49 @@ async def update_db_achievement_index(index, region):
             if not ach_id:
                 continue
             
-            achievement_record = db.session.execute(db.select(AchievementIndex)
-                .filter_by(achievement_id=ach_id)).one_or_none()
+            achievement_record = db.session.scalar(
+                db.select(AchievementIndex)
+                .filter_by(achievement_id=ach_id)
+            )
             if not achievement_record:
                 achievement_record = AchievementIndex(achievement_id=ach_id)
+                details = await fetch_achievement_details(region, ach_id, token)
+                
             setattr(achievement_record, region_column, True)
+
             db.session.add(achievement_record)
         db.session.commit()
 
 async def get_achievement_index(region, locale=None):
-    # Figure out if we need to refetch index
-    now = time.time()
-    if locale is None or locale not in region_lookup(region)["locales"]:
-        locale = region_lookup(region)["locales"][0]  # Default locale. Just getting index = no translation strictly required - maybe change later.
     achievements = await fetch_achievement_index(region)
     try:
         await update_db_achievement_index(achievements, region)
     except Exception as e:
         print("Cache write error:", e)
     return achievements
+
+async def get_achievement_details(region, ach_id):
+    token = fetch_access_token()
+    # Get all achievement IDs
+    achievement_records = db.session.scalars(
+        db.select(AchievementIndex)
+        .filter_by(achievement_id=ach_id)
+    ).all()
+    if not achievement_records:
+        return
+    
+    # Check if they 
+    
+    # Check if they have details
+    strings_record = db.session.scalar(
+        db.select(AchievementString)
+        .filter_by(achievement_id=ach_id)
+    ).first()
+    if not strings_record:
+        strings_record = AchievementString(achievement_id=ach_id)
+        db.session.add(strings_record)
+    details = await fetch_achievement_details(region, ach_id, token)
+    strings_record.name = details.get("name", "")
+    strings_record.description = details.get("description", "")
+    db.session.commit()
+    return details

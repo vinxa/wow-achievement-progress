@@ -8,6 +8,8 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from services.helpers import refresh_achievement_data
 from models import db
 
+scheduler = BackgroundScheduler()
+
 
 def create_app():
     app = Flask(__name__)
@@ -26,23 +28,15 @@ def create_app():
     def ratelimit_handler(e):
         return {"error": "Rate limit exceeded"}, 429
     
-    scheduler = BackgroundScheduler()
-    def schedule_achievement_data_refresh():
-        try:
-            loop = asyncio.get_running_loop()
-        except RuntimeError:
-            loop = None
+    def run_async_refresh_job():
+        asyncio.run(refresh_achievement_data())
+    
+    if not scheduler.running:
+        scheduler.add_job(func=run_async_refresh_job, trigger="interval", weeks=1)
+        scheduler.start()
 
-        if loop and loop.is_running():
-            asyncio.create_task(refresh_achievement_data())
-        else:
-            asyncio.run(refresh_achievement_data())
-
-    scheduler.add_job(func=schedule_achievement_data_refresh, trigger="interval", weeks=1)
-    scheduler.start()
-
-    print("[SCHEDULER] Running cache refresh on startup...")
-    threading.Thread(target=schedule_achievement_data_refresh, daemon=True).start()
+        print("[SCHEDULER] Running cache refresh on startup...")
+        threading.Thread(target=run_async_refresh_job, daemon=True).start()
 
     return app
 
